@@ -14,23 +14,31 @@ public class GenerateParticle : MonoBehaviour
 
     void Update()
     {
-        //if (Input.GetMouseButton(0))
-        //{
-        //    Vector3 screenCoords = Input.mousePosition;
-        //    screenCoords.z = 10;
-        //    Vector3 gamCoords = _cam.ScreenToWorldPoint(screenCoords);
-        //    Instantiate(particle, gamCoords, Quaternion.identity);
-        //}
+#if UNITY_EDITOR || UNITY_STANDALONE
 
-        foreach(Touch touch in Input.touches)
+        if (Input.GetMouseButtonDown(0))
+        {
+            InstanceParticles(Input.mousePosition, Color.red);
+
+        }
+
+#elif UNITY_ANDROID
+
+        foreach (Touch touch in Input.touches)
         {
             if(touch.phase == TouchPhase.Began)
             {
-                Vector3 screenCoord = touch.position;
-                screenCoord.z = 10;
-                Vector3 gameCoord = _cam.ScreenToWorldPoint(screenCoord);
-                Instantiate(particle, gameCoord, Quaternion.identity);
+                InstanceParticles(touch.position, Color.blue);
             }
         }
+#endif
     }
+
+        void InstanceParticles(Vector3 screenCoords, Color color)
+        {
+            screenCoords.z = 10;
+            Vector3 gamCoords = _cam.ScreenToWorldPoint(screenCoords);
+            GameObject particleClone=Instantiate(particle, gamCoords, Quaternion.identity);
+            particleClone.GetComponent<Renderer>().material.color = color;
+        }
 }
